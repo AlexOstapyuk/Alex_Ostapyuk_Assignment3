@@ -1,71 +1,74 @@
-// Sample test file for the image class.
-// Reads a given pgm image, draws a line, and saves it to
-// another pgm image.
+//Alex Ostapyuk
+//h1
+//Computer Vision
+
 #include "image.h"
 #include <cstdio>
 #include <iostream>
 #include <string>
 #include <cmath>
 #include <vector>
-
 using namespace std;
 using namespace ComputerVisionProjects;
 
 
-void convolution(Image &an_image) {
-    vector<vector<int>> convo(an_image.num_rows(), vector<int>(an_image.num_columns(), 0)); // Create an empty 2D space for convoluted image
-    for (int i = 0; i < an_image.num_rows(); ++i) {
-        for (int j = 0; j < an_image.num_columns(); ++j) {
-            convo[i][j] = an_image.GetPixel(i, j);
-        }
-    }
 
-    vector<vector<int>> x_side = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
-    vector<vector<int>> y_side = {{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}};
+ 
+//The convolution function applies Sobel's Mask in order to detect the edges of the image
+void convolution(Image &an_image) {
+    //The new values after Sobel's mask will be stored to convo
+    vector<vector<int>> convo(an_image.num_rows(), vector<int>(an_image.num_columns(), 0)); 
+    
+    //the mask used to convolute the horizontal side
+    vector<vector<int>> v_side = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
+    //the mask used to convolute the vertical side
+    vector<vector<int>> h_side = {{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}};
 
     int up_left, up_mid, up_right, mid_left, mid_mid, mid_right, bottom_left, bottom_mid, bottom_right, total_x, total_y, gradient;
 
     for (int i = 1; i < an_image.num_rows() - 1; ++i) {
         for (int j = 1; j < an_image.num_columns() - 1; ++j) {
-            // Sobel X convolution (horizontal edge detection)
-            up_left = x_side[0][0] * an_image.GetPixel(i - 1, j - 1);
-            up_mid = x_side[0][1] * an_image.GetPixel(i - 1, j);
-            up_right = x_side[0][2] * an_image.GetPixel(i - 1, j + 1);
-            mid_left = x_side[1][0] * an_image.GetPixel(i, j - 1);
-            mid_mid = x_side[1][1] * an_image.GetPixel(i, j);
-            mid_right = x_side[1][2] * an_image.GetPixel(i, j + 1);
-            bottom_left = x_side[2][0] * an_image.GetPixel(i + 1, j - 1);
-            bottom_mid = x_side[2][1] * an_image.GetPixel(i + 1, j);
-            bottom_right = x_side[2][2] * an_image.GetPixel(i + 1, j + 1);
 
-            total_x = (up_left + up_mid + up_right + mid_left + mid_mid + mid_right + bottom_left + bottom_mid + bottom_right) / (54);
+            // Calculation of the current pixel with surrounding pixels to determin the edge for the vertical side
+            up_left = v_side[0][0] * an_image.GetPixel(i - 1, j - 1);
+            up_mid = v_side[0][1] * an_image.GetPixel(i - 1, j);
+            up_right = v_side[0][2] * an_image.GetPixel(i - 1, j + 1);
+            mid_left = v_side[1][0] * an_image.GetPixel(i, j - 1);
+            mid_mid = v_side[1][1] * an_image.GetPixel(i, j);
+            mid_right = v_side[1][2] * an_image.GetPixel(i, j + 1);
+            bottom_left = v_side[2][0] * an_image.GetPixel(i + 1, j - 1);
+            bottom_mid = v_side[2][1] * an_image.GetPixel(i + 1, j);
+            bottom_right = v_side[2][2] * an_image.GetPixel(i + 1, j + 1);
 
-            // // Sobel Y convolution (vertical edge detection)
-            up_left = y_side[0][0] * an_image.GetPixel(i - 1, j - 1);
-            up_mid = y_side[0][1] * an_image.GetPixel(i - 1, j);
-            up_right = y_side[0][2] * an_image.GetPixel(i - 1, j + 1);
-            mid_left = y_side[1][0] * an_image.GetPixel(i, j - 1);
-            mid_mid = y_side[1][1] * an_image.GetPixel(i, j);
-            mid_right = y_side[1][2] * an_image.GetPixel(i, j + 1);
-            bottom_left = y_side[2][0] * an_image.GetPixel(i + 1, j - 1);
-            bottom_mid = y_side[2][1] * an_image.GetPixel(i + 1, j);
-            bottom_right = y_side[2][2] * an_image.GetPixel(i + 1, j + 1);
+            total_x = (up_left + up_mid + up_right + mid_left + mid_mid + mid_right + bottom_left + bottom_mid + bottom_right);
 
-            total_y = (up_left + up_mid + up_right + mid_left + mid_mid + mid_right + bottom_left + bottom_mid + bottom_right) / 54;
+            // Calculation of the current pixel with surrounding pixels to determine the edge for the horizontal side
+            up_left = h_side[0][0] * an_image.GetPixel(i - 1, j - 1);
+            up_mid = h_side[0][1] * an_image.GetPixel(i - 1, j);
+            up_right = h_side[0][2] * an_image.GetPixel(i - 1, j + 1);
+            mid_left = h_side[1][0] * an_image.GetPixel(i, j - 1);
+            mid_mid = h_side[1][1] * an_image.GetPixel(i, j);
+            mid_right = h_side[1][2] * an_image.GetPixel(i, j + 1);
+            bottom_left = h_side[2][0] * an_image.GetPixel(i + 1, j - 1);
+            bottom_mid = h_side[2][1] * an_image.GetPixel(i + 1, j);
+            bottom_right = h_side[2][2] * an_image.GetPixel(i + 1, j + 1);
 
-            // Compute the gradient magnitude (Pythagoras theorem)
+            total_y = (up_left + up_mid + up_right + mid_left + mid_mid + mid_right + bottom_left + bottom_mid + bottom_right);
+
+            //Apply the squared gradient so we can combine both the horizontal and vertical edges
             gradient = sqrt(total_x * total_x + total_y * total_y);
 
-            // Clip values between 0 and 255
-            gradient = max(0, min(255, gradient));
+            //make sure that the gradient is not greater than the highest RGB
+            gradient = min(255, gradient);
 
 
 
-            // Store the result
+            //Place the edge values into the temporary 2D vector convo
             convo[i][j] = gradient;
         }
     }
 
+    //Set the pixel of the image to the edge values that we got for convo
     for (int i = 0; i < an_image.num_rows(); ++i) {
         for (int j = 0; j < an_image.num_columns(); ++j) {
             an_image.SetPixel(i, j, convo[i][j]);
@@ -73,25 +76,6 @@ void convolution(Image &an_image) {
     }
 }
 
-void h1(Image *an_image, Image *edge){
-  //ignore edge of image (start at i=1, j=1 and end at i=size-2, j=size-2 so we can do a 3 by 3 check)
-
-  double dx,dy;
-  
-  for(int i=1; i<an_image->num_rows()-1; i++){
-    for(int j=1; j<an_image->num_columns()-1; j++){
-        dx = (an_image->GetPixel(i,j+1) - an_image->GetPixel(i,j-1)) / 2.0;
-
-        dy = (an_image->GetPixel(i+1,j) - an_image->GetPixel(i-1,j)) / 2.0;
-
-        edge->SetPixel(i,j,sqrt((dx*dx)+(dy*dy)));
-    }
-  }
-
-  //can also try convolution, then do gradient
-
-  
-}
 
 int
 main(int argc, char **argv){
@@ -108,8 +92,7 @@ main(int argc, char **argv){
     cout <<"Can't open file " << input_file << endl;
     return 0;
   }
-  Image edge_image = an_image;
-  //h1(&an_image, &edge_image);
+
   convolution(an_image);
   
   if (!WriteImage(output_file, an_image)){

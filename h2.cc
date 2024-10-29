@@ -1,4 +1,7 @@
-//edit to match p1 conditions
+//Alex Ostapyuk
+//h2
+//Computer Vision
+
 
 #include "image.h"
 #include <cstdio>
@@ -8,7 +11,8 @@
 using namespace std;
 using namespace ComputerVisionProjects;
 
-void p1(Image *an_image, const int threshold){
+//same function as p1 from previous assignment
+void h1(Image *an_image, const int threshold){
   if (an_image == nullptr) abort();
 
   for(int i=0; i<an_image->num_rows(); ++i){
@@ -40,7 +44,7 @@ main(int argc, char **argv){
     return 0;
   }
 
-  p1(&an_image, threshold); 
+  h1(&an_image, threshold); 
   
   if (!WriteImage(output_file, an_image)){
     cout << "Can't write to file " << output_file << endl;
